@@ -14,6 +14,8 @@ public enum AmazonFreeRTOSGattService {
     static let MqttProxy = CBUUID(string: "a9d7166a-d72e-40a9-a002-48044cc30000")
     /// Network Config Service.
     static let NetworkConfig = CBUUID(string: "a9d7166a-d72e-40a9-a002-48044cc30100")
+    /// Get thingName
+    static let oxtechServiceUUID = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF00")
 }
 
 /// BLE characteristics used by the SDK.
@@ -50,4 +52,8 @@ public enum AmazonFreeRTOSGattCharacteristic {
     static let TXLargeNetworkMessage = CBUUID(string: "a9d7166a-d72e-40a9-a002-48044cc30104")
     /// Used for network large object transfer.
     static let RXLargeNetworkMessage = CBUUID(string: "a9d7166a-d72e-40a9-a002-48044cc30105")
+
+    /// User to get thingName
+    static let thingName = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF02")
+    static let simConfig = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF03")
 }

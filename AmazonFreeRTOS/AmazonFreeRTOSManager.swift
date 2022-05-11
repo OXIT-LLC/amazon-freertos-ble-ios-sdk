@@ -87,7 +87,7 @@ extension AmazonFreeRTOSManager: CBCentralManagerDelegate {
     public func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         devices[peripheral.identifier]?.reset()
         peripheral.delegate = self
-        peripheral.discoverServices([AmazonFreeRTOSGattService.DeviceInfo, AmazonFreeRTOSGattService.MqttProxy, AmazonFreeRTOSGattService.NetworkConfig])
+        peripheral.discoverServices([AmazonFreeRTOSGattService.DeviceInfo, AmazonFreeRTOSGattService.MqttProxy, AmazonFreeRTOSGattService.NetworkConfig, AmazonFreeRTOSGattService.oxtechServiceUUID])
         NotificationCenter.default.post(name: .afrCentralManagerDidConnectDevice, object: nil, userInfo: ["identifier": peripheral.identifier])
         debugPrint("[\(peripheral.identifier.uuidString)] afrCentralManagerDidConnectPeripheral")
     }
@@ -163,6 +163,11 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
             }
             devices[peripheral.identifier]?.peripheral.writeValue(Data([1]), for: characteristic, type: .withResponse)
 
+        case AmazonFreeRTOSGattService.oxtechServiceUUID:
+            for characteristic in service.characteristics ?? [] where characteristic.uuid == AmazonFreeRTOSGattCharacteristic.thingName {
+                peripheral.readValue(for: characteristic)
+            }
+
         default:
             return
         }
@@ -200,6 +205,13 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
 
         case AmazonFreeRTOSGattCharacteristic.TXLargeMqttMessage, AmazonFreeRTOSGattCharacteristic.TXLargeNetworkMessage:
             didUpdateValueForTXLargeMessage(peripheral: peripheral, characteristic: characteristic)
+
+        case AmazonFreeRTOSGattCharacteristic.thingName:
+            guard let value = characteristic.value, let thingName = String(data: value, encoding: .utf8) else {
+                debugPrint("Error (getThingName): Not valid sting received")
+                return
+            }
+            NotificationCenter.default.post(name: .afrDidGetThingName, object: nil, userInfo: ["thingName": thingName])
 
         default:
             return

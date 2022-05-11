@@ -44,4 +44,7 @@ extension NSNotification.Name {
     public static let afrDidEditNetwork = NSNotification.Name("afrDidEditNetwork")
     /// FreeRTOS delete network did delete a saved network.
     public static let afrDidDeleteNetwork = NSNotification.Name("afrDidDeleteNetwork")
+
+    /// For thingName
+    public static let afrDidGetThingName = NSNotification.Name("afrDidGetThingName")
 }
