@@ -841,6 +841,21 @@ extension AmazonFreeRTOSManager {
         writeValueToRXMessage(peripheral: peripheral, characteristic: characteristic, data: data)
     }
 
+    internal func saveCellularNetwork(_ peripheral: CBPeripheral, cellularData: String) {
+
+        debugPrint("[\(peripheral.identifier.uuidString)][NETWORK] ↓ \(cellularData)")
+
+        guard let data = encode(cellularData) else {
+            debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] Invalid saveNetworkReq")
+            return
+        }
+        guard let characteristic = peripheral.serviceOf(uuid: AmazonFreeRTOSGattService.oxtechServiceUUID)?.characteristicOf(uuid: AmazonFreeRTOSGattCharacteristic.simConfig) else {
+            debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] oxtech service or simConfig characteristic doesn't exist")
+            return
+        }
+        peripheral.writeValue(data, for: characteristic, type: .withoutResponse)
+    }
+
     internal func editNetwork(_ peripheral: CBPeripheral, editNetworkReq: EditNetworkReq) {
 
         debugPrint("[\(peripheral.identifier.uuidString)][NETWORK] ↓ \(editNetworkReq)")
