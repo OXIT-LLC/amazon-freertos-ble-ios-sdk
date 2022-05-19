@@ -223,6 +223,9 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
 
         if let error = error {
             debugPrint("[\(peripheral.identifier.uuidString)][ERROR] afrPeripheralDidWriteValueForCharacteristic: \(error.localizedDescription)")
+            if characteristic.uuid == AmazonFreeRTOSGattCharacteristic.simConfig {
+                NotificationCenter.default.post(name: .afrDidSaveCellularNetwork, object: nil, userInfo: ["peripheral": peripheral.identifier, "status": false])
+            }
             return
         }
 
@@ -230,6 +233,10 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
 
         case AmazonFreeRTOSGattCharacteristic.RXLargeMqttMessage, AmazonFreeRTOSGattCharacteristic.RXLargeNetworkMessage:
             writeValueToRXLargeMessage(peripheral: peripheral, characteristic: characteristic)
+
+        case AmazonFreeRTOSGattCharacteristic.simConfig:
+            print("Sim Config char value: ", characteristic.value ?? "nil")
+            NotificationCenter.default.post(name: .afrDidSaveCellularNetwork, object: nil, userInfo: ["peripheral": peripheral.identifier, "status": true])
 
         default:
             return
@@ -853,7 +860,7 @@ extension AmazonFreeRTOSManager {
             debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] oxtech service or simConfig characteristic doesn't exist")
             return
         }
-        peripheral.writeValue(data, for: characteristic, type: .withoutResponse)
+        peripheral.writeValue(data, for: characteristic, type: .withResponse)
     }
 
     internal func editNetwork(_ peripheral: CBPeripheral, editNetworkReq: EditNetworkReq) {

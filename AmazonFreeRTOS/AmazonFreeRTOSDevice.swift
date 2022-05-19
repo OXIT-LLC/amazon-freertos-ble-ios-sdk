@@ -222,7 +222,7 @@ extension AmazonFreeRTOSDevice {
 
     /// Save Cellular network to device.
     ///
-    /// - Parameter saveNetworkReq: The save network request.
+    /// - Parameter saveCellularNetwork: The save cellular request.
     public func saveCellularNetwork(_ cellularData: String) {
         AmazonFreeRTOSManager.shared.saveCellularNetwork(peripheral, cellularData: cellularData)
     }

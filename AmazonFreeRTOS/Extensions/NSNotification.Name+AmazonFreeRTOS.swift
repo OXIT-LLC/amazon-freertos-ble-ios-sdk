@@ -47,4 +47,6 @@ extension NSNotification.Name {
 
     /// For thingName
     public static let afrDidGetThingName = NSNotification.Name("afrDidGetThingName")
+    /// Fro save Cellular network did save a network.
+    public static let afrDidSaveCellularNetwork = NSNotification.Name("afrDidSaveCellularNetwork")
 }
