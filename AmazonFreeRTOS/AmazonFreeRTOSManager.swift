@@ -213,6 +213,15 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
             }
             NotificationCenter.default.post(name: .afrDidGetThingName, object: nil, userInfo: ["thingName": thingName])
 
+        case AmazonFreeRTOSGattCharacteristic.simConfig:
+            print("Read on Sim Config char complete: ", characteristic.value ?? "nil")
+            guard let value = characteristic.value, let responseCode = String(data: value, encoding: .utf8) else {
+                debugPrint("Error (simConfig): Not valid sting received")
+                NotificationCenter.default.post(name: .afrDidSaveCellularNetwork, object: nil, userInfo: ["peripheral": peripheral.identifier, "responseCode": "-1"])
+                return
+            }
+            NotificationCenter.default.post(name: .afrDidSaveCellularNetwork, object: nil, userInfo: ["peripheral": peripheral.identifier, "responseCode": responseCode])
+
         default:
             return
         }
@@ -224,7 +233,8 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
         if let error = error {
             debugPrint("[\(peripheral.identifier.uuidString)][ERROR] afrPeripheralDidWriteValueForCharacteristic: \(error.localizedDescription)")
             if characteristic.uuid == AmazonFreeRTOSGattCharacteristic.simConfig {
-                NotificationCenter.default.post(name: .afrDidSaveCellularNetwork, object: nil, userInfo: ["peripheral": peripheral.identifier, "status": false])
+                print("Write on Sim Config char failed: ", error.localizedDescription)
+                peripheral.readValue(for: characteristic)
             }
             return
         }
@@ -235,8 +245,8 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
             writeValueToRXLargeMessage(peripheral: peripheral, characteristic: characteristic)
 
         case AmazonFreeRTOSGattCharacteristic.simConfig:
-            print("Sim Config char value: ", characteristic.value ?? "nil")
-            NotificationCenter.default.post(name: .afrDidSaveCellularNetwork, object: nil, userInfo: ["peripheral": peripheral.identifier, "status": true])
+            print("Write on Sim Config char complete: ", characteristic.value ?? "nil")
+            peripheral.readValue(for: characteristic)
 
         default:
             return
