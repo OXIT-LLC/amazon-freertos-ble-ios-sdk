@@ -214,13 +214,22 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
             NotificationCenter.default.post(name: .afrDidGetThingName, object: nil, userInfo: ["thingName": thingName])
 
         case AmazonFreeRTOSGattCharacteristic.simConfig:
-            print("Read on Sim Config char complete: ", characteristic.value ?? "nil")
+            print("Read on simConfig char complete: ", characteristic.value ?? "nil")
             guard let value = characteristic.value, let responseCode = String(data: value, encoding: .utf8) else {
-                debugPrint("Error (simConfig): Not valid sting received")
+                debugPrint("Error (simConfig): Not valid string received")
                 NotificationCenter.default.post(name: .afrDidSaveCellularNetwork, object: nil, userInfo: ["peripheral": peripheral.identifier, "responseCode": "-1"])
                 return
             }
             NotificationCenter.default.post(name: .afrDidSaveCellularNetwork, object: nil, userInfo: ["peripheral": peripheral.identifier, "responseCode": responseCode])
+
+        case AmazonFreeRTOSGattCharacteristic.networkConfig:
+            print("Read on networkConfig char complete: ", characteristic.value ?? "nil")
+            guard let value = characteristic.value, let responseCode = String(data: value, encoding: .utf8) else {
+                debugPrint("Error (networkConfig): Not valid string received")
+                NotificationCenter.default.post(name: .afrDidSaveNetworkConfig, object: nil, userInfo: ["peripheral": peripheral.identifier, "responseCode": "-1"])
+                return
+            }
+            NotificationCenter.default.post(name: .afrDidSaveNetworkConfig, object: nil, userInfo: ["peripheral": peripheral.identifier, "responseCode": responseCode])
 
         default:
             return
@@ -233,7 +242,10 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
         if let error = error {
             debugPrint("[\(peripheral.identifier.uuidString)][ERROR] afrPeripheralDidWriteValueForCharacteristic: \(error.localizedDescription)")
             if characteristic.uuid == AmazonFreeRTOSGattCharacteristic.simConfig {
-                print("Write on Sim Config char failed: ", error.localizedDescription)
+                print("Write on simConfig char failed: ", error.localizedDescription)
+                peripheral.readValue(for: characteristic)
+            } else if characteristic.uuid == AmazonFreeRTOSGattCharacteristic.networkConfig {
+                print("Write on networkConfig char failed: ", error.localizedDescription)
                 peripheral.readValue(for: characteristic)
             }
             return
@@ -245,7 +257,11 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
             writeValueToRXLargeMessage(peripheral: peripheral, characteristic: characteristic)
 
         case AmazonFreeRTOSGattCharacteristic.simConfig:
-            print("Write on Sim Config char complete: ", characteristic.value ?? "nil")
+            print("Write on simConfig char complete: ", characteristic.value ?? "nil")
+            peripheral.readValue(for: characteristic)
+
+        case AmazonFreeRTOSGattCharacteristic.networkConfig:
+            print("Write on networkConfig char complete: ", characteristic.value ?? "nil")
             peripheral.readValue(for: characteristic)
 
         default:
@@ -863,11 +879,26 @@ extension AmazonFreeRTOSManager {
         debugPrint("[\(peripheral.identifier.uuidString)][NETWORK] ↓ \(cellularData)")
 
         guard let data = encode(cellularData) else {
-            debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] Invalid saveNetworkReq")
+            debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] Invalid saveCellularNetworkReq")
             return
         }
         guard let characteristic = peripheral.serviceOf(uuid: AmazonFreeRTOSGattService.oxtechServiceUUID)?.characteristicOf(uuid: AmazonFreeRTOSGattCharacteristic.simConfig) else {
             debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] oxtech service or simConfig characteristic doesn't exist")
+            return
+        }
+        peripheral.writeValue(data, for: characteristic, type: .withResponse)
+    }
+
+    internal func saveNetworkConfig(_ peripheral: CBPeripheral, networkConfigData: String) {
+
+        debugPrint("[\(peripheral.identifier.uuidString)][NETWORK] ↓ \(networkConfigData)")
+
+        guard let data = encode(networkConfigData) else {
+            debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] Invalid saveNetworkConfigReq")
+            return
+        }
+        guard let characteristic = peripheral.serviceOf(uuid: AmazonFreeRTOSGattService.oxtechServiceUUID)?.characteristicOf(uuid: AmazonFreeRTOSGattCharacteristic.networkConfig) else {
+            debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] oxtech service or networkConfig characteristic doesn't exist")
             return
         }
         peripheral.writeValue(data, for: characteristic, type: .withResponse)

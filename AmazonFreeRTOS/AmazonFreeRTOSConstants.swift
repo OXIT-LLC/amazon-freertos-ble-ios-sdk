@@ -56,4 +56,5 @@ public enum AmazonFreeRTOSGattCharacteristic {
     /// User to get thingName
     static let thingName = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF02")
     static let simConfig = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF03")
+    static let networkConfig = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF04")
 }
