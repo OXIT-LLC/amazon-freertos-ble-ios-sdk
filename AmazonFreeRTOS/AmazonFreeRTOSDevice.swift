@@ -222,9 +222,16 @@ extension AmazonFreeRTOSDevice {
 
     /// Save Cellular network to device.
     ///
-    /// - Parameter saveCellularNetwork: The save cellular request.
+    /// - Parameter saveCellularNetwork: The cellular data
     public func saveCellularNetwork(_ cellularData: String) {
         AmazonFreeRTOSManager.shared.saveCellularNetwork(peripheral, cellularData: cellularData)
+    }
+
+    /// Save Network config to the device.
+    ///
+    /// - Parameter saveNetworkConfig: The network config
+    public func saveNetworkConfig(_ networkData: String) {
+        AmazonFreeRTOSManager.shared.saveNetworkConfig(peripheral, networkConfigData: networkData)
     }
 
     /// Edit wifi network of device. Currently only support priority change.
