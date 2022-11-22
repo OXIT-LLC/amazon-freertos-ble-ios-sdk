@@ -878,7 +878,11 @@ extension AmazonFreeRTOSManager {
 
         debugPrint("[\(peripheral.identifier.uuidString)][NETWORK] ↓ \(cellularData)")
 
-        guard let data = encode(cellularData) else {
+//        guard let data = encode(cellularData) else {
+//            debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] Invalid saveCellularNetworkReq")
+//            return
+//        }
+        guard let data = cellularData.data(using: .utf8) else {
             debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] Invalid saveCellularNetworkReq")
             return
         }
@@ -893,7 +897,11 @@ extension AmazonFreeRTOSManager {
 
         debugPrint("[\(peripheral.identifier.uuidString)][NETWORK] ↓ \(networkConfigData)")
 
-        guard let data = encode(networkConfigData) else {
+//        guard let data = encode(networkConfigData) else {
+//            debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] Invalid saveNetworkConfigReq")
+//            return
+//        }
+        guard let data = networkConfigData.data(using: .utf8) else {
             debugPrint("[\(peripheral.identifier.uuidString)][NETWORK][ERROR] Invalid saveNetworkConfigReq")
             return
         }
