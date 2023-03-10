@@ -14,7 +14,7 @@ public enum AmazonFreeRTOSGattService {
     static let MqttProxy = CBUUID(string: "a9d7166a-d72e-40a9-a002-48044cc30000")
     /// Network Config Service.
     static let NetworkConfig = CBUUID(string: "a9d7166a-d72e-40a9-a002-48044cc30100")
-    /// Get thingName
+    /// OxTech Custom Service
     static let oxtechServiceUUID = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF00")
 }
 
@@ -53,8 +53,12 @@ public enum AmazonFreeRTOSGattCharacteristic {
     /// Used for network large object transfer.
     static let RXLargeNetworkMessage = CBUUID(string: "a9d7166a-d72e-40a9-a002-48044cc30105")
 
-    /// User to get thingName
+    /// Used to get firmware version
+    static let fwVersion = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF01")
+    /// Used to get thingName
     static let thingName = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF02")
+    /// Used to set cellular configuration
     static let simConfig = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF03")
+    /// Used to set network configuration
     static let networkConfig = CBUUID(string: "C6F2D9E3-49E7-4125-9014-BFC6D669FF04")
 }

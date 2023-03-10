@@ -46,6 +46,8 @@ extension NSNotification.Name {
     public static let afrDidDeleteNetwork = NSNotification.Name("afrDidDeleteNetwork")
 
     /// For thingName
+    public static let afrDidGetFirmwareVersion = NSNotification.Name("afrDidGetFirmwareVersion")
+    /// For thingName
     public static let afrDidGetThingName = NSNotification.Name("afrDidGetThingName")
     /// For save Cellular network did save a network.
     public static let afrDidSaveCellularNetwork = NSNotification.Name("afrDidSaveCellularNetwork")

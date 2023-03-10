@@ -164,8 +164,10 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
             devices[peripheral.identifier]?.peripheral.writeValue(Data([1]), for: characteristic, type: .withResponse)
 
         case AmazonFreeRTOSGattService.oxtechServiceUUID:
-            for characteristic in service.characteristics ?? [] where characteristic.uuid == AmazonFreeRTOSGattCharacteristic.thingName {
-                peripheral.readValue(for: characteristic)
+            for characteristic in service.characteristics ?? [] {
+                if characteristic.uuid == AmazonFreeRTOSGattCharacteristic.thingName || characteristic.uuid == AmazonFreeRTOSGattCharacteristic.fwVersion {
+                    peripheral.readValue(for: characteristic)
+                }
             }
 
         default:
@@ -213,6 +215,13 @@ extension AmazonFreeRTOSManager: CBPeripheralDelegate {
             }
             NotificationCenter.default.post(name: .afrDidGetThingName, object: nil, userInfo: ["thingName": thingName])
 
+        case AmazonFreeRTOSGattCharacteristic.fwVersion:
+            guard let value = characteristic.value, let fwVersion = String(data: value, encoding: .utf8) else {
+                debugPrint("Error (getFwVersion): Not valid sting received")
+                return
+            }
+            NotificationCenter.default.post(name: .afrDidGetFirmwareVersion, object: nil, userInfo: ["firmwareVersion": fwVersion])
+            
         case AmazonFreeRTOSGattCharacteristic.simConfig:
             print("Read on simConfig char complete: ", characteristic.value ?? "nil")
             guard let value = characteristic.value, let responseCode = String(data: value, encoding: .utf8) else {
